@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ejercicios con Vectores Numéricos</title>
+  <style>
+    table td {
+      text-align: center;
+    }
+    button {
+      margin: 5px;
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: none;
+      background-color: #435143;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #79877a;
+    }
+    select {
+      padding: 4px;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+
+<body>
+  <h3>GRUPO 3: Algoritmos de Ordenamiento</h3>
+  <h4>Ejercicio con Vectores</h4>
+
+  <div>
+    <table>
+      <tbody>
+        <tr>
+          <td>Dimensión del arreglo:</td>
+          <td>
+            <select id="select-dimension-arreglo">
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+              <option value="9">9</option>
+              <option value="10">10</option>
+              <option value="15">15</option>
+              <option value="20">20</option>
+              <option value="25">25</option>
+              <option value="30">30</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td>Ordenar de forma:</td>
+          <td>
+            <select id="select-orden">
+              <option value="asc">Ascendente</option>
+              <option value="desc">Descendente</option>
+            </select>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <br>
+
+  <table id="id-table-vector-numerico" border="1" cellspacing="1" cellpadding="1">
+    <thead>
+      <tr>
+        <td colspan="10">Vector numérico de N elementos</td>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>0</td>
+        <td>1</td>
+        <td>2</td>
+        <td>3</td>
+        <td>4</td>
+        <td>5</td>
+        <td>6</td>
+        <td>7</td>
+        <td>8</td>
+        <td>9</td>
+      </tr>
+      <tr>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr>
+        <td colspan="5"><button id="btn-cargar-vector">Cargar Vector</button></td>
+        <td colspan="5"><button id="btn-vaciar-vector">Vaciar Vector</button></td>
+      </tr>
+      <tr>
+        <td colspan="5"><button id="btn-ordenar-seleccion">Ordenar Selección</button></td>
+        <td colspan="5"><button id="btn-ordenar-burbuja">Ordenar Burbuja</button></td>
+      </tr>
+    </tfoot>
+  </table>
+
+  <hr>
+
+  <table>
+    <thead>
+      <tr>
+        <td colspan="2">Cálculos con vectores</td>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Resultado:</td>
+        <td colspan="2"><input type="text" id="id-txt-respuesta" size="70"></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <script>
+    // Declaración del vector
+    let vector = [];
+    const NUM_MAXIMO_RANDOM = 50;
+
+    // Referencias a elementos HTML
+    const tableTbody = document.querySelector('#id-table-vector-numerico > tbody');
+    const btnCargarVector = document.getElementById("btn-cargar-vector");
+    const btnVaciarVector = document.getElementById("btn-vaciar-vector");
+    const btnOrdenarSeleccion = document.getElementById("btn-ordenar-seleccion");
+    const btnOrdenarBurbuja = document.getElementById("btn-ordenar-burbuja");
+    const txtRespuesta = document.getElementById("id-txt-respuesta");
+    const selectDimension = document.getElementById("select-dimension-arreglo");
+    const selectOrden = document.getElementById("select-orden");
+
+    let TOPE = parseInt(selectDimension.value);
+
+    selectDimension.addEventListener('change', (event) => {
+      TOPE = parseInt(event.target.value);
+    });
+
+    // Cargar vector aleatorio
+    btnCargarVector.addEventListener('click', (event) => {
+      event.preventDefault();
+      fnCargarVector();
+      fnPresentarVector();
+    });
+
+    function fnCargarVector() {
+      vector = [];
+      for (let x = 0; x < TOPE; x++) {
+        const numero = Math.ceil(Math.random() * NUM_MAXIMO_RANDOM);
+        vector[x] = numero;
+      }
+    }
+
+    function fnPresentarVector() {
+      let str = "";
+      for (let fila = 0; fila < 2; fila++) {
+        str += "<tr>";
+        for (let x = 0; x < TOPE; x++) {
+          if (fila === 0) {
+            str += `<td>${x}</td>`;
+          } else {
+            str += `<td bgcolor="#00FF00">${vector[x] ?? "-"}</td>`;
+          }
+        }
+        str += "</tr>";
+      }
+      tableTbody.innerHTML = str;
+    }
+
+    btnVaciarVector.addEventListener('click', (event) => {
+      event.preventDefault();
+      vector = [];
+      fnPresentarVector();
+    });
+
+    // --- ORDENAMIENTO SELECCIÓN ---
+    btnOrdenarSeleccion.addEventListener('click', () => {
+      const orden = selectOrden.value;
+      for (let i = 0; i < vector.length - 1; i++) {
+        let pos = i;
+        for (let j = i + 1; j < vector.length; j++) {
+          if (orden === "asc" ? vector[j] < vector[pos] : vector[j] > vector[pos]) {
+            pos = j;
+          }
+        }
+        let temp = vector[i];
+        vector[i] = vector[pos];
+        vector[pos] = temp;
+      }
+      fnPresentarVector();
+      txtRespuesta.value = "Vector ordenado por SELECCIÓN en orden " + (orden === "asc" ? "ASCENDENTE" : "DESCENDENTE");
+    });
+
+    // --- ORDENAMIENTO BURBUJA ---
+    btnOrdenarBurbuja.addEventListener('click', () => {
+      const orden = selectOrden.value;
+      for (let i = 0; i < vector.length - 1; i++) {
+        for (let j = 0; j < vector.length - i - 1; j++) {
+          if (orden === "asc" ? vector[j] > vector[j + 1] : vector[j] < vector[j + 1]) {
+            let temp = vector[j];
+            vector[j] = vector[j + 1];
+            vector[j + 1] = temp;
+          }
+        }
+      }
+      fnPresentarVector();
+      txtRespuesta.value = "Vector ordenado por BURBUJA en orden " + (orden === "asc" ? "ASCENDENTE" : "DESCENDENTE");
+    });
+  </script>
+</body>
+</html>
